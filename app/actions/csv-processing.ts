@@ -31,6 +31,12 @@ export async function processCSV(formData: FormData): Promise<{
   data?: MaternalCareData
   prediction?: PredictionResponse
   recommendations?: string
+  series?: Array<{
+    index: number
+    timestamp?: string
+    data: MaternalCareData
+    prediction: PredictionResponse
+  }>
   error?: string
 }> {
   try {
@@ -46,68 +52,79 @@ export async function processCSV(formData: FormData): Promise<{
 
     // Read CSV content
     const csvText = await file.text()
-    const lines = csvText.trim().split("\n")
+    const lines = csvText.trim().split("\n").filter((l) => l.trim().length > 0)
 
     if (lines.length < 2) {
       return { success: false, error: "CSV file must contain headers and at least one data row" }
     }
 
-    // Parse CSV headers and data
+    // Parse CSV headers
     const headers = lines[0].split(",").map((h) => h.trim())
-    const dataRow = lines[1].split(",").map((d) => d.trim())
 
-    // Create data object
-    const csvData: any = {}
-    headers.forEach((header, index) => {
-      csvData[header] = dataRow[index]
+    // Identify optional timestamp column
+    const tsKey = headers.find((h) => /^(date|timestamp|time)$/i.test(h))
+
+    // Build time series rows
+    const rows = lines.slice(1).map((line) => line.split(",").map((d) => d.trim()))
+
+    const seriesData: Array<{
+      index: number
+      timestamp?: string
+      data: MaternalCareData
+    }> = rows.map((cols, idx) => {
+      const row: any = {}
+      headers.forEach((header, colIdx) => {
+        row[header] = cols[colIdx]
+      })
+      const dataPoint: MaternalCareData = {
+        Age: Number.parseFloat(row.Age || row.age),
+        SystolicBP: Number.parseFloat(row.SystolicBP || row.systolicbp),
+        DiastolicBP: Number.parseFloat(row.DiastolicBP || row.diastolicbp),
+        BS: Number.parseFloat(row.BS || row.bs),
+        BodyTemp: Number.parseFloat(row.BodyTemp || row.bodytemp),
+        HeartRate: Number.parseFloat(row.HeartRate || row.heartrate),
+      }
+      const timestamp = tsKey ? String(row[tsKey]) : undefined
+      return { index: idx, timestamp, data: dataPoint }
     })
 
-    // Extract required parameters
-    const extractedData: MaternalCareData = {
-      Age: Number.parseFloat(csvData.Age || csvData.age),
-      SystolicBP: Number.parseFloat(csvData.SystolicBP || csvData.systolicbp),
-      DiastolicBP: Number.parseFloat(csvData.DiastolicBP || csvData.diastolicbp),
-      BS: Number.parseFloat(csvData.BS || csvData.bs),
-      BodyTemp: Number.parseFloat(csvData.BodyTemp || csvData.bodytemp),
-      HeartRate: Number.parseFloat(csvData.HeartRate || csvData.heartrate),
+    if (!seriesData.length) {
+      return { success: false, error: "No data rows found in CSV" }
     }
 
-    // Validate extracted data
+    // Validate first row to ensure required fields exist
     const requiredFields = ["Age", "SystolicBP", "DiastolicBP", "BS", "BodyTemp", "HeartRate"]
-    const missingFields = requiredFields.filter((field) => isNaN(extractedData[field as keyof MaternalCareData]))
-
+    const missingFields = requiredFields.filter((field) => isNaN(seriesData[0].data[field as keyof MaternalCareData]))
     if (missingFields.length > 0) {
-      return {
-        success: false,
-        error: `Missing or invalid values for: ${missingFields.join(", ")}`,
-      }
+      return { success: false, error: `Missing or invalid values for: ${missingFields.join(", ")}` }
     }
 
-    // Make API call to maternal health endpoint
-    const response = await fetch("https://health-models.onrender.com/api/maternal", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(extractedData),
-    })
+    // Call API for each data point (in parallel)
+    const predictions: PredictionResponse[] = await Promise.all(
+      seriesData.map(async (entry) => {
+        const resp = await fetch("https://health-models.onrender.com/api/maternal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(entry.data),
+        })
+        if (!resp.ok) {
+          throw new Error(`API request failed: ${resp.status} ${resp.statusText}`)
+        }
+        return (await resp.json()) as PredictionResponse
+      })
+    )
 
-    if (!response.ok) {
-      return {
-        success: false,
-        error: `API request failed: ${response.status} ${response.statusText}`,
-      }
-    }
+    const series = seriesData.map((s, i) => ({ ...s, prediction: predictions[i] }))
 
-    const prediction: PredictionResponse = await response.json()
+    // Use last entry for snapshot fields and recommendations
+    const last = series[series.length - 1]
 
-    // Generate Gemini recommendations based on the API response
     let recommendations: string | undefined
     try {
       const { getMaternalRecommendations } = await import("@/lib/ai/gemini")
       recommendations = await getMaternalRecommendations({
-        data: extractedData as unknown as Record<string, number>,
-        prediction: prediction as unknown as any,
+        data: last.data as unknown as Record<string, number>,
+        prediction: last.prediction as unknown as any,
       })
     } catch (aiErr) {
       console.error("Gemini generation error:", aiErr)
@@ -115,8 +132,9 @@ export async function processCSV(formData: FormData): Promise<{
 
     return {
       success: true,
-      data: extractedData,
-      prediction,
+      data: last.data,
+      prediction: last.prediction,
+      series,
       recommendations,
     }
   } catch (error) {

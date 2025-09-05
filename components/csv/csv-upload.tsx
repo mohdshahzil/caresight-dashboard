@@ -23,6 +23,7 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [recommendations, setRecommendations] = useState<string | null>(null)
+  const [series, setSeries] = useState<any[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -34,6 +35,7 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
     setError(null)
     setResult(null)
     setRecommendations(null)
+    setSeries(null)
 
     try {
       const formData = new FormData()
@@ -46,6 +48,9 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
         onPredictionUpdate?.(response.prediction)
         if (response.recommendations) {
           setRecommendations(response.recommendations)
+        }
+        if (response.series) {
+          setSeries(response.series as any[])
         }
       } else {
         setError(response.error || "Failed to process CSV")
@@ -112,6 +117,28 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
         color: item.color,
       }
     })
+  }
+
+  const getSeriesVitals = () => {
+    if (!series || series.length === 0) return []
+    return series.map((s) => ({
+      name: s.timestamp || `#${s.index + 1}`,
+      SystolicBP: s.data.SystolicBP,
+      DiastolicBP: s.data.DiastolicBP,
+      BS: s.data.BS,
+      BodyTemp: s.data.BodyTemp,
+      HeartRate: s.data.HeartRate,
+    }))
+  }
+
+  const getSeriesRisk = () => {
+    if (!series || series.length === 0) return []
+    return series.map((s) => ({
+      name: s.timestamp || `#${s.index + 1}`,
+      high: s.prediction.probabilities["high risk"] * 100,
+      mid: s.prediction.probabilities["mid risk"] * 100,
+      low: s.prediction.probabilities["low risk"] * 100,
+    }))
   }
 
   const getProbabilityData = () => {
@@ -288,55 +315,117 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
                 {/* Risk Probability Donut */}
                 <div className="space-y-2">
                   <h4 className="font-semibold text-center text-lg">Risk Probability Breakdown</h4>
-                  <ChartContainer
-                    config={{
-                      low: { label: "Low", color: "#22c55e" },
-                      mid: { label: "Mid", color: "#eab308" },
-                      high: { label: "High", color: "#ef4444" },
-                    }}
-                    className="h-72"
-                  >
-                    <PieChart>
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Pie
-                        data={getProbabilityData()}
-                        dataKey="value"
-                        nameKey="name"
-                        innerRadius={60}
-                        outerRadius={100}
-                        paddingAngle={2}
-                        cornerRadius={6}
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-5xl">
+                      <ChartContainer
+                        config={{
+                          low: { label: "Low", color: "#22c55e" },
+                          mid: { label: "Mid", color: "#eab308" },
+                          high: { label: "High", color: "#ef4444" },
+                        }}
+                        className="h-80 animate-in fade-in-50 duration-500"
                       >
-                        {getProbabilityData().map((entry, index) => (
-                          <Cell key={`slice-${index}`} fill={entry.fill as string} />
-                        ))}
-                      </Pie>
-                      <ChartLegend content={<ChartLegendContent />} />
-                    </PieChart>
-                  </ChartContainer>
+                        <PieChart>
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Pie
+                            data={getProbabilityData()}
+                            dataKey="value"
+                            nameKey="name"
+                            innerRadius={70}
+                            outerRadius={110}
+                            paddingAngle={2}
+                            cornerRadius={6}
+                            isAnimationActive
+                            animationDuration={700}
+                            animationEasing="ease-out"
+                          >
+                            {getProbabilityData().map((entry, index) => (
+                              <Cell key={`slice-${index}`} fill={entry.fill as string} />
+                            ))}
+                          </Pie>
+                          <ChartLegend content={<ChartLegendContent />} />
+                        </PieChart>
+                      </ChartContainer>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Vitals vs Typical Ranges (Radar) */}
                 <div className="space-y-2">
                   <h4 className="font-semibold text-center text-lg">Vitals vs Typical Ranges</h4>
-                  <ChartContainer
-                    config={{ patient: { label: "Patient", color: "#60a5fa" }, ideal: { label: "Ideal", color: "#a3e635" } }}
-                    className="h-80"
-                  >
-                    <RadarChart data={getVitalsRadarData()}>
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="subject" />
-                      <PolarRadiusAxis angle={30} domain={[0, 120]} />
-                      <Radar name="Patient" dataKey="score" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.4} />
-                      <Radar name="Ideal" dataKey="ideal" stroke="#a3e635" fill="#a3e635" fillOpacity={0.2} />
-                      <ChartLegend content={<ChartLegendContent />} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                    </RadarChart>
-                  </ChartContainer>
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-5xl">
+                      <ChartContainer
+                        config={{ patient: { label: "Patient", color: "#60a5fa" }, ideal: { label: "Ideal", color: "#a3e635" } }}
+                        className="h-80 animate-in fade-in-50 duration-500"
+                      >
+                        <RadarChart data={getVitalsRadarData()}>
+                          <PolarGrid />
+                          <PolarAngleAxis dataKey="subject" />
+                          <PolarRadiusAxis angle={30} domain={[0, 120]} />
+                          <Radar name="Patient" dataKey="score" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.4} isAnimationActive animationDuration={700} />
+                          <Radar name="Ideal" dataKey="ideal" stroke="#a3e635" fill="#a3e635" fillOpacity={0.2} isAnimationActive animationDuration={700} />
+                          <ChartLegend content={<ChartLegendContent />} />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                        </RadarChart>
+                      </ChartContainer>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Enhanced SHAP Values Visualization */}
                 <div className="space-y-6">
+                  {/* Time Series: Risk Probabilities */}
+                  {series && series.length > 1 && (
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-center text-lg">Risk Probabilities Over Time</h4>
+                      <ChartContainer
+                        config={{ high: { label: "High", color: "#ef4444" }, mid: { label: "Mid", color: "#eab308" }, low: { label: "Low", color: "#22c55e" } }}
+                        className="h-80 animate-in fade-in-50 duration-500"
+                      >
+                        <LineChart data={getSeriesRisk()}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                          <YAxis unit="%" />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <ChartLegend content={<ChartLegendContent />} />
+                          <Line type="monotone" dataKey="high" stroke="#ef4444" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                          <Line type="monotone" dataKey="mid" stroke="#eab308" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                          <Line type="monotone" dataKey="low" stroke="#22c55e" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                        </LineChart>
+                      </ChartContainer>
+                    </div>
+                  )}
+
+                  {/* Time Series: Vitals */}
+                  {series && series.length > 1 && (
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-center text-lg">Vitals Over Time</h4>
+                      <ChartContainer
+                        config={{
+                          SystolicBP: { label: "Systolic BP", color: "#3b82f6" },
+                          DiastolicBP: { label: "Diastolic BP", color: "#60a5fa" },
+                          BS: { label: "Blood Sugar", color: "#22c55e" },
+                          BodyTemp: { label: "Body Temp", color: "#f59e0b" },
+                          HeartRate: { label: "Heart Rate", color: "#ef4444" },
+                        }}
+                        className="h-80 animate-in fade-in-50 duration-500"
+                      >
+                        <LineChart data={getSeriesVitals()}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                          <YAxis />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <ChartLegend content={<ChartLegendContent />} />
+                          <Line type="monotone" dataKey="SystolicBP" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                          <Line type="monotone" dataKey="DiastolicBP" stroke="#60a5fa" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                          <Line type="monotone" dataKey="BS" stroke="#22c55e" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                          <Line type="monotone" dataKey="BodyTemp" stroke="#f59e0b" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                          <Line type="monotone" dataKey="HeartRate" stroke="#ef4444" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
+                        </LineChart>
+                      </ChartContainer>
+                    </div>
+                  )}
                   {/* Horizontal Bar Chart */}
                   <div className="space-y-4">
                     <h4 className="font-semibold text-center text-lg">Feature Impact (SHAP Values)</h4>
@@ -441,18 +530,22 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
                 {/* Cumulative SHAP Trend */}
                 <div className="space-y-2">
                   <h4 className="font-semibold text-center text-lg">Cumulative Feature Impact Trend</h4>
-                  <ChartContainer
-                    config={{ impact: { label: "Cumulative Impact", color: "#8b5cf6" } }}
-                    className="h-72"
-                  >
-                    <LineChart data={getWaterfallData()} margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="feature" tick={{ fontSize: 12 }} />
-                      <YAxis tickFormatter={(v) => Number(v).toFixed(2)} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Line type="monotone" dataKey="end" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} />
-                    </LineChart>
-                  </ChartContainer>
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-5xl">
+                      <ChartContainer
+                        config={{ impact: { label: "Cumulative Impact", color: "#8b5cf6" } }}
+                        className="h-80 animate-in fade-in-50 duration-500"
+                      >
+                        <LineChart data={getWaterfallData()} margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="feature" tick={{ fontSize: 12 }} />
+                          <YAxis tickFormatter={(v) => Number(v).toFixed(2)} />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Line type="monotone" dataKey="end" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} isAnimationActive animationDuration={700} />
+                        </LineChart>
+                      </ChartContainer>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Enhanced Feature Explanations */}
