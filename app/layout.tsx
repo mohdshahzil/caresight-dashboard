@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'CareSight',
+  description: 'CareSight is a platform that offers personalized health insights and recommendations.',
+  generator: 'Team Dominators',
 }
 
 export default function RootLayout({
