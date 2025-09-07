@@ -10,6 +10,7 @@ import { NotificationsPanel } from "@/components/dashboard/notifications-panel"
 import { PatientList } from "@/components/patients/patient-list"
 import { PatientDetails } from "@/components/patients/patient-details"
 import { CSVUpload } from "@/components/csv/csv-upload"
+import { CardiovascularUpload } from "@/components/csv/cardiovascular-upload"
 
 import { maternalCarePatients, cardiovascularPatients, diabetesPatients, arthritisPatients } from "@/lib/patient-data"
 import { exportPatientData, refreshPatientData } from "@/app/actions/patient-actions"
@@ -183,6 +184,7 @@ export default function DashboardPage() {
             <OverviewCards patients={filteredAndSortedPatients} />
 
             {activeTab === "maternal" && <CSVUpload onPredictionUpdate={handlePredictionUpdate} />}
+            {activeTab === "cardiovascular" && <CardiovascularUpload onPredictionUpdate={handlePredictionUpdate} />}
 
             {/* Patient List and Details */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
