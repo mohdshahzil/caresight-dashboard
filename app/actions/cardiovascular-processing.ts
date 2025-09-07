@@ -52,6 +52,7 @@ export async function processCardiovascularCSV(formData: FormData): Promise<{
   success: boolean
   data?: CardiovascularData[]
   predictions?: CardiovascularPredictionResponse
+  recommendations?: string
   error?: string
 }> {
   try {
@@ -157,10 +158,23 @@ export async function processCardiovascularCSV(formData: FormData): Promise<{
     const predictions = (await response.json()) as CardiovascularPredictionResponse
     console.log("API response data:", JSON.stringify(predictions, null, 2))
 
+    // Generate AI recommendations
+    let recommendations: string | undefined
+    try {
+      const { getCardiovascularRecommendations } = await import("@/lib/ai/gemini")
+      recommendations = await getCardiovascularRecommendations({
+        data: patients,
+        predictions,
+      })
+    } catch (aiErr) {
+      console.error("Gemini generation error:", aiErr)
+    }
+
     return {
       success: true,
       data: patients,
       predictions,
+      recommendations,
     }
   } catch (error) {
     console.error("Cardiovascular CSV processing error:", error)
