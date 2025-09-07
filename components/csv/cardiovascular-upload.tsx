@@ -22,6 +22,7 @@ interface CardiovascularUploadProps {
 export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploadProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [result, setResult] = useState<any>(null)
+  const [recommendations, setRecommendations] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -32,6 +33,7 @@ export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploa
     setIsProcessing(true)
     setError(null)
     setResult(null)
+    setRecommendations(null)
 
     try {
       const formData = new FormData()
@@ -42,6 +44,9 @@ export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploa
       if (response.success && response.data && response.predictions) {
         setResult(response)
         onPredictionUpdate?.(response.predictions)
+        if (response.recommendations) {
+          setRecommendations(response.recommendations)
+        }
       } else {
         setError(response.error || "Failed to process cardiovascular CSV")
       }
@@ -56,6 +61,7 @@ export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploa
   const handleReset = () => {
     setResult(null)
     setError(null)
+    setRecommendations(null)
     setIsProcessing(false)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
@@ -96,7 +102,12 @@ export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploa
   }
 
   const getPatientSummaryData = () => {
-    if (!result?.data) return []
+    if (!result?.data) return {
+      ageGroups: { "18-30": 0, "31-50": 0, "51-70": 0, "70+": 0 },
+      genderCount: { Male: 0, Female: 0, Other: 0 },
+      diabetesCount: { Yes: 0, No: 0 },
+      hypertensionCount: { Yes: 0, No: 0 }
+    }
     
     const patients = result.data
     const ageGroups = { "18-30": 0, "31-50": 0, "51-70": 0, "70+": 0 }
@@ -422,7 +433,7 @@ export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploa
                     <div className="space-y-4">
                       <h4 className="font-semibold text-lg">Individual Risk Assessments</h4>
                       <div className="space-y-4">
-                        {result.predictions.patient_predictions.map((patient, index) => (
+                        {result.predictions.patient_predictions.map((patient: any, index: number) => (
                           <div key={patient.patient_id} className="p-4 border rounded-lg">
                             <div className="flex items-center justify-between mb-3">
                               <h5 className="font-semibold">Patient {patient.patient_id}</h5>
@@ -471,13 +482,13 @@ export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploa
                                 <h6 className="font-medium mb-2">Key Risk Factors (SHAP Values)</h6>
                                 <div className="space-y-1">
                                   {Object.entries(patient.shap_values)
-                                    .sort(([,a], [,b]) => Math.abs(b) - Math.abs(a))
+                                    .sort(([,a], [,b]) => Math.abs(Number(b)) - Math.abs(Number(a)))
                                     .slice(0, 5)
                                     .map(([feature, value]) => (
                                       <div key={feature} className="flex items-center justify-between text-sm">
                                         <span className="capitalize">{feature.replace(/_/g, ' ')}</span>
-                                        <span className={`font-medium ${value > 0 ? 'text-red-600' : 'text-blue-600'}`}>
-                                          {value > 0 ? '+' : ''}{value.toFixed(4)}
+                                        <span className={`font-medium ${Number(value) > 0 ? 'text-red-600' : 'text-blue-600'}`}>
+                                          {Number(value) > 0 ? '+' : ''}{Number(value).toFixed(4)}
                                         </span>
                                       </div>
                                     ))}
@@ -490,6 +501,28 @@ export function CardiovascularUpload({ onPredictionUpdate }: CardiovascularUploa
                     </div>
                   )}
 
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* AI Recommendations */}
+          {recommendations && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  AI-Generated Clinical Recommendations
+                </CardTitle>
+                <CardDescription>
+                  Personalized cardiovascular care recommendations based on cohort analysis and risk factors
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {recommendations}
+                  </ReactMarkdown>
                 </div>
               </CardContent>
             </Card>
