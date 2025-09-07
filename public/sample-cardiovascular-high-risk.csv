@@ -1,0 +1,9 @@
+patient_id,age,gender,diabetes,hypertension,systolic_bp,diastolic_bp,heart_rate,cholesterol,glucose,medication_adherence,exercise_minutes,diet_score,stress_level,weight_kg,oxygen_saturation,temperature_c,sleep_hours
+P101,72,Male,Yes,Yes,175,108,95,285,195,45,20,3,8,95,92,37.3,4
+P102,68,Female,Yes,Yes,165,102,88,270,185,50,25,4,7,88,94,37.1,5
+P103,75,Male,Yes,Yes,180,110,100,295,205,40,15,2,9,98,91,37.4,4
+P104,70,Female,Yes,Yes,170,105,92,280,190,48,30,3,8,85,93,37.2,5
+P105,73,Male,Yes,Yes,172,106,97,275,200,42,18,3,8,92,92,37.3,4
+P106,69,Female,Yes,Yes,168,103,90,265,180,52,35,4,7,82,94,37.0,5
+P107,76,Male,Yes,Yes,185,112,105,300,210,38,12,2,9,100,90,37.5,3
+P108,71,Female,Yes,Yes,162,100,85,260,175,55,40,4,6,80,95,36.9,6
