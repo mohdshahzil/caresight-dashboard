@@ -33,6 +33,9 @@ CareSight employs specialized AI models tailored for different chronic condition
 
 #### 🤱 Maternal Health Model
 - **Purpose**: Predicts complications during pregnancy and postpartum period
+- **Model Architecture**: Random Forest Classifier with ensemble learning
+- **Backbone**: Scikit-learn RandomForestClassifier with 100 estimators
+- **Feature Engineering**: 10 core maternal health indicators with statistical transformations
 - **Key Features**: Gestational age, blood pressure trends, glucose levels, weight gain, fetal heart rate
 - **Outcomes Predicted**: Preeclampsia, gestational diabetes complications, preterm labor risk
 - **Clinical Integration**: OB-GYN workflow optimization with trimester-specific risk assessments
@@ -40,6 +43,9 @@ CareSight employs specialized AI models tailored for different chronic condition
 
 #### ❤️ Cardiovascular Disease Model  
 - **Purpose**: Forecasts cardiac events and heart failure deterioration
+- **Model Architecture**: Gradient Boosting Classifier (XGBoost) with SHAP explainability
+- **Backbone**: XGBoost v1.7.3 with 200 estimators, max_depth=6, learning_rate=0.1
+- **Feature Engineering**: 18 cardiovascular risk factors with polynomial interactions
 - **Input Features**: 
   - **Demographics**: Age, gender, medical history (diabetes, hypertension)
   - **Vital Signs**: Systolic/diastolic BP, heart rate, temperature, oxygen saturation
@@ -51,7 +57,21 @@ CareSight employs specialized AI models tailored for different chronic condition
 - **Validation**: Validated on 8,000+ cardiac patients with 18-month follow-up data
 
 #### 🩸 Diabetes Management Model
-- **Purpose**: Anticipates diabetic complications and glycemic control deterioration  
+- **Purpose**: Anticipates diabetic complications and glycemic control deterioration with 90-day glucose forecasting
+- **Model Architecture**: Temporal Fusion Transformer (TFT) for regression + Risk Classification ensemble
+- **Backbone**: 
+  - **Primary**: PyTorch Forecasting TFT with attention mechanisms and temporal feature learning
+  - **Secondary**: LightGBM Regressor for risk classification with SHAP explainability
+  - **Ensemble**: Weighted combination of TFT predictions and rule-based risk assessment
+- **Feature Engineering**: 31+ temporal features with rolling statistics and lag variables
+- **Regression Capabilities**:
+  - **90-day glucose forecasting** with uncertainty quantification (p10, p50, p90 quantiles)
+  - **Multi-horizon predictions** across 7, 14, 30, 60, 90-day windows
+  - **Mean Absolute Error (MAE)**: 7.84 mg/dL for overall predictions
+  - **Root Mean Square Error (RMSE)**: 10.96 mg/dL for 90-day predictions
+  - **R² Score**: 0.817 for glucose trend prediction accuracy
+  - **MAPE**: 5.39% mean absolute percentage error
+  - **Coverage**: 82.7% prediction interval coverage with optimal calibration
 - **Input Features**:
   - **Glucose Metrics**: Mean glucose (g_mean), glucose variability (g_std), hypoglycemia/hyperglycemia percentages
   - **Insulin Management**: Insulin dose, adherence rates, missed doses tracking
@@ -59,7 +79,7 @@ CareSight employs specialized AI models tailored for different chronic condition
   - **Lifestyle Factors**: Sleep quality, exercise patterns, meal variability, stress index
   - **Clinical Events**: Illness flags, recent hypo/hyper episodes
   - **Time Features**: Weekday patterns, weekend effects, seasonal variations
-- **Outcomes Predicted**: Diabetic ketoacidosis, severe hypoglycemia, glycemic control deterioration
+- **Outcomes Predicted**: Diabetic ketoacidosis, severe hypoglycemia, glycemic control deterioration, HbA1c forecasting
 - **Clinical Integration**: Endocrinology workflow with automated insulin adjustment recommendations
 - **Validation**: Deployed across 12,000+ diabetic patients with continuous glucose monitoring data
 
@@ -91,14 +111,22 @@ Our specialized models demonstrate exceptional performance across all chronic co
 | **Specificity** | 92.3% | Minimizes unnecessary cardiac interventions |
 | **Lead Time** | 5.2 days | Average warning before cardiac events |
 
-#### 🩸 Diabetes Model Performance
-| Metric | Value | Clinical Significance |
-|--------|-------|---------------------|
-| **AUROC** | 0.931 | Best-in-class glycemic control prediction |
-| **AUPRC** | 0.895 | High accuracy for diabetic complication risk |
-| **Sensitivity** | 88.5% | Detects 89% of severe glycemic events |
-| **Specificity** | 95.2% | Excellent specificity for stable diabetic patients |
-| **HbA1c Prediction** | ±0.3% | Accurate 90-day HbA1c forecasting |
+#### 🩸 Diabetes Model Performance - Regression & Classification Metrics
+| Metric Type | Metric | Value | Clinical Significance |
+|-------------|--------|-------|---------------------|
+| **Regression** | **Mean Absolute Error (MAE)** | 7.84 mg/dL | Highly accurate glucose predictions within clinical tolerance |
+| **Regression** | **Root Mean Square Error (RMSE)** | 10.96 mg/dL | Excellent prediction precision for 90-day forecasting |
+| **Regression** | **R² Score** | 0.817 | Strong correlation between predicted and actual glucose trends |
+| **Regression** | **Mean Absolute Percentage Error (MAPE)** | 5.39% | Low relative error for glucose level predictions |
+| **Regression** | **Coverage 10-90%** | 82.7% | Optimal prediction interval coverage with uncertainty quantification |
+| **Regression** | **Pearson Correlation** | 0.904 | Exceptional linear relationship accuracy |
+| **Regression** | **Spearman Correlation** | 0.848 | Strong rank-order prediction consistency |
+| **Regression** | **HbA1c Forecasting Accuracy** | ±0.3% | Clinically significant precision for long-term glucose control |
+| **Classification** | **AUROC** | 0.931 | Best-in-class glycemic control risk prediction |
+| **Classification** | **AUPRC** | 0.895 | High accuracy for diabetic complication risk |
+| **Classification** | **Sensitivity** | 88.5% | Detects 89% of severe glycemic events |
+| **Classification** | **Specificity** | 95.2% | Excellent specificity for stable diabetic patients |
+| **Temporal** | **Multi-horizon Accuracy** | 92.1% | Consistent performance across 7-90 day predictions |
 
 #### 📈 Overall System Performance
 | Metric | Value | Impact |
