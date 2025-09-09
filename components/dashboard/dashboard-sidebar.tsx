@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
-import { Heart, Activity, Stethoscope, Bone, BarChart3, Download, RefreshCw, Bell, Settings } from "lucide-react"
+import { Heart, Activity, Stethoscope, BarChart3, Download, RefreshCw, Bell, Settings } from "lucide-react"
 
 interface DashboardSidebarProps {
   activeTab: string
@@ -88,14 +88,6 @@ export function DashboardSidebar({
           >
             <Stethoscope className="w-4 h-4 mr-2" />
             Diabetes
-          </Button>
-          <Button
-            variant={activeTab === "arthritis" ? "default" : "ghost"}
-            className="w-full justify-start"
-            onClick={() => onTabChange("arthritis")}
-          >
-            <Bone className="w-4 h-4 mr-2" />
-            Arthritis
           </Button>
         </nav>
 

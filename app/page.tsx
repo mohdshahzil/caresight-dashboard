@@ -26,9 +26,6 @@ export default function LandingPage() {
             <a href="#why" className="text-muted-foreground hover:text-foreground transition-colors">
               Why It Matters
             </a>
-            <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
-              Contact
-            </a>
           </nav>
           <Link href="/dashboard">
             <Button className="bg-primary hover:bg-primary/90">
@@ -58,9 +55,6 @@ export default function LandingPage() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
-              Watch Demo
-            </Button>
           </div>
         </div>
       </section>
@@ -239,26 +233,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Contact */}
-      <section id="contact" className="py-20 px-4">
-        <div className="container mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Ready to Transform Patient Care?</h2>
-          <p className="text-xl text-muted-foreground mb-8 text-pretty">
-            Join hundreds of healthcare providers already using CareSight to improve patient outcomes.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/dashboard">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8">
-                Start Free Trial
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
-              Schedule Demo
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* Contact section removed for hackathon version */}
 
       {/* Footer */}
       <footer className="border-t border-border bg-card/50 py-12 px-4">

@@ -15,7 +15,7 @@ import { DiabetesUpload } from "@/components/csv/diabetes-upload"
 import { DiabetesDashboard } from "@/components/diabetes/diabetes-dashboard"
 import { ErrorBoundary } from "@/components/error-boundary"
 
-import { maternalCarePatients, cardiovascularPatients, diabetesPatients, arthritisPatients } from "@/lib/patient-data"
+import { maternalCarePatients, cardiovascularPatients, diabetesPatients } from "@/lib/patient-data"
 import { exportPatientData, refreshPatientData } from "@/app/actions/patient-actions"
 import { logError } from "@/lib/error-logger"
 
@@ -26,26 +26,7 @@ export default function DashboardPage() {
   const [riskFilter, setRiskFilter] = useState("all")
   const [sortBy, setSortBy] = useState("riskScore")
   const [csvPrediction, setCsvPrediction] = useState<any>(null)
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "alert" as const,
-      message: "Sarah Johnson requires immediate attention - Risk score increased to 85%",
-      time: "2 min ago",
-    },
-    {
-      id: 2,
-      type: "info" as const,
-      message: "New lab results available for Robert Smith",
-      time: "15 min ago",
-    },
-    {
-      id: 3,
-      type: "warning" as const,
-      message: "Medication adherence alert for 3 patients",
-      time: "1 hour ago",
-    },
-  ])
+  const [notifications, setNotifications] = useState([])
   const [showNotifications, setShowNotifications] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -57,8 +38,6 @@ export default function DashboardPage() {
         return cardiovascularPatients
       case "diabetes":
         return diabetesPatients
-      case "arthritis":
-        return arthritisPatients
       default:
         return maternalCarePatients
     }
@@ -134,22 +113,9 @@ export default function DashboardPage() {
     }
   }
 
-  const handleDismissNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id))
-  }
 
   const handlePredictionUpdate = (prediction: any) => {
     setCsvPrediction(prediction)
-    if (prediction && prediction.prediction) {
-      // Add notification for new prediction
-      const newNotification = {
-        id: Date.now(),
-        type: "info" as const,
-        message: `New AI prediction: ${prediction.prediction} - Risk assessment completed`,
-        time: "Just now",
-      }
-      setNotifications((prev) => [newNotification, ...prev])
-    }
   }
 
   return (
@@ -190,7 +156,6 @@ export default function DashboardPage() {
               notifications={notifications}
               showNotifications={showNotifications}
               onClose={() => setShowNotifications(false)}
-              onDismiss={handleDismissNotification}
             />
 
 {/* Overview cards removed for diabetes - using dedicated dashboard */}
