@@ -76,26 +76,9 @@ export const cardiovascularPatients = [
   },
 ]
 
-export const diabetesPatients = [
-  {
-    id: 5,
-    name: "Linda Davis",
-    age: 58,
-    riskScore: 72,
-    riskLevel: "High",
-    lastVisit: "2024-01-13",
-    condition: "Type 2 Diabetes",
-    vitals: { bp: "135/88", hr: 82, temp: 98.5 },
-    contact: { phone: "(555) 567-8901", email: "linda.d@email.com" },
-    medicalHistory: ["Type 2 DM", "Neuropathy", "Retinopathy"],
-    medications: ["Metformin", "Insulin", "Lisinopril"],
-    allergies: ["None known"],
-    labResults: [
-      { test: "HbA1c", value: "8.5%", normal: "<7%", status: "high" },
-      { test: "Glucose", value: "220 mg/dL", normal: "70-140 mg/dL", status: "high" },
-    ],
-  },
-]
+// Diabetes patients are now managed through the patient storage system
+// See /lib/patient-storage.ts for the new patient management
+export const diabetesPatients: any[] = []
 
 export const arthritisPatients = [
   {

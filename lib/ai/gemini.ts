@@ -114,4 +114,59 @@ Keep to <200 words. Use bullet points. Focus on actionable clinical guidance. Us
   return text.trim()
 }
 
+export async function getDiabetesRecommendations(
+  input: {
+    demographics: { name: string; age: number; gender: string }
+    contextFactors: Record<string, { impact: string; value: number; multiplier: number }>
+    selectedHorizon: string
+    horizonRisk: {
+      hyper_risk?: number
+      hypo_risk?: number
+      risk_level?: string
+      risk_score?: number
+      trend_high_risk?: number
+      volatility_risk?: number
+    }
+    recentTrends?: string
+  }
+): Promise<string> {
+  const apiKey = requireEnv("GOOGLE_GENERATIVE_AI_API_KEY")
+  const genAI = new GoogleGenerativeAI(apiKey)
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
+  const contextList = Object.entries(input.contextFactors || {})
+    .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v.value} (${v.impact.replace('_', ' ')})`)
+    .join(', ')
+
+  const prompt = `
+You are a diabetes care specialist providing personalized risk reduction advice. Given the following patient summary, provide:
+- 3-5 actionable, patient-friendly recommendations to improve diabetes risk
+- A brief explanation of the main risk drivers
+- Tips for lifestyle or medication improvements
+- When to seek medical attention if relevant
+
+PATIENT PROFILE:
+- Name: ${input.demographics.name}
+- Age: ${input.demographics.age}
+- Gender: ${input.demographics.gender}
+
+CONTEXT FACTORS:
+${contextList}
+
+RISK FOR NEXT ${input.selectedHorizon.replace('d', ' days')}:
+- Hyperglycemia risk: ${input.horizonRisk.hyper_risk !== undefined ? Math.round(input.horizonRisk.hyper_risk * 100) + '%' : 'N/A'}
+- Hypoglycemia risk: ${input.horizonRisk.hypo_risk !== undefined ? Math.round(input.horizonRisk.hypo_risk * 100) + '%' : 'N/A'}
+- Overall risk level: ${input.horizonRisk.risk_level || 'N/A'}
+- Overall risk score: ${input.horizonRisk.risk_score !== undefined ? Math.round(input.horizonRisk.risk_score * 100) + '%' : 'N/A'}
+- Glucose trend risk: ${input.horizonRisk.trend_high_risk !== undefined ? Math.round(input.horizonRisk.trend_high_risk * 100) + '%' : 'N/A'}
+- Volatility risk: ${input.horizonRisk.volatility_risk !== undefined ? Math.round(input.horizonRisk.volatility_risk * 100) + '%' : 'N/A'}
+
+${input.recentTrends ? `RECENT TRENDS: ${input.recentTrends}` : ''}
+
+Keep your answer under 200 words. Use clear, encouraging language. Focus on what the patient can do next to improve their diabetes risk.
+`
+
+  const result = await model.generateContent(prompt)
+  const text = result.response.text()
+  return text.trim()
+}

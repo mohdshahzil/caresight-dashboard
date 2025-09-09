@@ -11,9 +11,13 @@ import { PatientList } from "@/components/patients/patient-list"
 import { PatientDetails } from "@/components/patients/patient-details"
 import { CSVUpload } from "@/components/csv/csv-upload"
 import { CardiovascularUpload } from "@/components/csv/cardiovascular-upload"
+import { DiabetesUpload } from "@/components/csv/diabetes-upload"
+import { DiabetesDashboard } from "@/components/diabetes/diabetes-dashboard"
+import { ErrorBoundary } from "@/components/error-boundary"
 
 import { maternalCarePatients, cardiovascularPatients, diabetesPatients, arthritisPatients } from "@/lib/patient-data"
 import { exportPatientData, refreshPatientData } from "@/app/actions/patient-actions"
+import { logError } from "@/lib/error-logger"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("maternal")
@@ -99,7 +103,11 @@ export default function DashboardPage() {
     try {
       await refreshPatientData(activeTab)
     } catch (error) {
-      console.error("Failed to refresh data:", error)
+      logError(error instanceof Error ? error : new Error('Failed to refresh data'), {
+        component: 'DashboardPage',
+        action: 'refresh-data',
+        metadata: { activeTab }
+      })
     } finally {
       setIsRefreshing(false)
     }
@@ -118,7 +126,11 @@ export default function DashboardPage() {
         URL.revokeObjectURL(url)
       }
     } catch (error) {
-      console.error("Failed to export data:", error)
+      logError(error instanceof Error ? error : new Error('Failed to export data'), {
+        component: 'DashboardPage',
+        action: 'export-data',
+        metadata: { activeTab, patientCount: filteredAndSortedPatients.length }
+      })
     }
   }
 
@@ -181,30 +193,46 @@ export default function DashboardPage() {
               onDismiss={handleDismissNotification}
             />
 
-            <OverviewCards patients={filteredAndSortedPatients} />
+{/* Overview cards removed for diabetes - using dedicated dashboard */}
+            {activeTab !== "diabetes" && <OverviewCards patients={filteredAndSortedPatients} />}
 
-            {activeTab === "maternal" && <CSVUpload onPredictionUpdate={handlePredictionUpdate} />}
-            {activeTab === "cardiovascular" && <CardiovascularUpload onPredictionUpdate={handlePredictionUpdate} />}
+            {activeTab === "maternal" && (
+              <ErrorBoundary>
+                <CSVUpload onPredictionUpdate={handlePredictionUpdate} />
+              </ErrorBoundary>
+            )}
+            {activeTab === "cardiovascular" && (
+              <ErrorBoundary>
+                <CardiovascularUpload onPredictionUpdate={handlePredictionUpdate} />
+              </ErrorBoundary>
+            )}
+            {activeTab === "diabetes" && (
+              <ErrorBoundary>
+                <DiabetesDashboard />
+              </ErrorBoundary>
+            )}
 
-            {/* Patient List and Details */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2">
-                <PatientList
-                  patients={filteredAndSortedPatients}
-                  selectedPatient={selectedPatient}
-                  onPatientSelect={setSelectedPatient}
-                  activeTab={activeTab}
-                  searchTerm={searchTerm}
-                  onSearchChange={setSearchTerm}
-                  riskFilter={riskFilter}
-                  onRiskFilterChange={setRiskFilter}
-                />
+            {/* Patient List and Details - Hidden for diabetes tab */}
+            {activeTab !== "diabetes" && (
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="xl:col-span-2">
+                  <PatientList
+                    patients={filteredAndSortedPatients}
+                    selectedPatient={selectedPatient}
+                    onPatientSelect={setSelectedPatient}
+                    activeTab={activeTab}
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    riskFilter={riskFilter}
+                    onRiskFilterChange={setRiskFilter}
+                  />
+                </div>
+
+                <div>
+                  <PatientDetails patient={selectedPatient} />
+                </div>
               </div>
-
-              <div>
-                <PatientDetails patient={selectedPatient} />
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
