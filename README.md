@@ -108,6 +108,20 @@ Our specialized models demonstrate exceptional performance across all chronic co
 | **Calibration Score** | 0.028 | Excellent probability calibration |
 | **Clinical Adoption** | 94% | Healthcare provider satisfaction rate |
 
+### 📊 Model Performance Visualizations
+
+#### ❤️ Cardiovascular Model Metrics
+![Cardiovascular Model Performance Metrics](metrics%20images/output.png)
+*Figure 1: Comprehensive performance evaluation of the cardiovascular disease prediction model showing confusion matrix, ROC curve, precision-recall curve, and calibration plot. The model demonstrates excellent discrimination with AUROC of 0.918 and high precision across all risk categories.*
+
+#### 🩸 Diabetes Model Performance - Classification Metrics
+![Diabetes Classification Metrics](metrics%20images/regressionmetrics.jpg)
+*Figure 2: Diabetes risk classification model performance showing detailed confusion matrix analysis, feature importance rankings, and classification accuracy across different risk levels. The model achieves superior performance with AUROC of 0.931 and excellent specificity for stable diabetic patients.*
+
+#### 🩸 Diabetes Model Performance - TFT Regression Analysis
+![Diabetes TFT Regression Metrics](metrics%20images/regressiontftdiabetes.jpg)
+*Figure 3: Temporal Fusion Transformer (TFT) model performance for glucose prediction showing regression analysis, prediction accuracy over time horizons, and uncertainty quantification. The model provides accurate 90-day glucose forecasting with ±0.3% HbA1c prediction accuracy.*
+
 ### 🧠 Explainability Engine
 - **Global Factors**: Population-level risk drivers across patient cohorts
 - **Local Explanations**: Individual patient risk factors using SHAP values
