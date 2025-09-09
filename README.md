@@ -5,6 +5,8 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org/)
 
+🔗 **Backend Repository**: [Health Models API](https://github.com/mohdshahzil/health-models) - Machine learning models and API endpoints
+
 > **See risks early. Act with confidence.**
 
 CareSight is an AI-driven risk prediction engine that forecasts whether chronic care patients are at risk of deterioration in the next 90 days. Built for healthcare professionals, it provides explainable predictions, actionable insights, and comprehensive patient monitoring across multiple chronic conditions.
@@ -208,6 +210,9 @@ interface PatientData {
 ## 🔌 API Documentation
 
 CareSight integrates with a comprehensive Health Models API that provides specialized endpoints for each chronic condition. The API is hosted at `https://health-models.onrender.com/api` and offers real-time predictions with full explainability.
+
+**🔗 Backend Source Code**: [https://github.com/mohdshahzil/health-models](https://github.com/mohdshahzil/health-models)  
+**📊 API Documentation**: [https://health-models.onrender.com/docs](https://health-models.onrender.com/docs)
 
 ### 🤱 Maternal Health Endpoint
 **`POST /api/maternal`** - Maternal Health & Diabetes Risk Prediction

@@ -63,11 +63,15 @@ export default function LandingPage() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="text-lg px-8 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              className="text-lg px-8 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg group"
               onClick={() => setShowVideoModal(true)}
             >
-              <Play className="w-5 h-5 mr-2" />
-              Watch Demo
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-primary/10 group-hover:bg-primary-foreground/20 flex items-center justify-center transition-colors">
+                  <Play className="w-3 h-3 fill-current" />
+                </div>
+                Watch Demo
+              </div>
             </Button>
           </div>
         </div>
@@ -331,34 +335,52 @@ export default function LandingPage() {
 
       {/* Video Demo Modal */}
       <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
-        <DialogContent className="max-w-4xl w-full p-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-0">
-            <DialogTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Play className="w-5 h-5 text-primary" />
-                CareSight Demo
-              </span>
+        <DialogContent className="max-w-5xl w-full p-0 overflow-hidden border-0 bg-black/95 backdrop-blur-sm">
+          <DialogHeader className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-6 pb-12">
+            <DialogTitle className="flex items-center justify-between text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                  <Play className="w-5 h-5 text-primary-foreground fill-current" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">CareSight Platform Demo</h3>
+                  <p className="text-sm text-gray-300 font-normal">See AI-powered healthcare analytics in action</p>
+                </div>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowVideoModal(false)}
-                className="h-6 w-6 p-0"
+                className="h-10 w-10 p-0 text-white hover:bg-white/20 rounded-full"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </Button>
             </DialogTitle>
           </DialogHeader>
-          <div className="aspect-video w-full">
+          <div className="aspect-video w-full relative">
             <iframe
               width="100%"
               height="100%"
-              src="https://www.youtube.com/embed/UW0U5jUQNsE?autoplay=1&rel=0&modestbranding=1"
-              title="CareSight Demo"
+              src="https://www.youtube.com/embed/UW0U5jUQNsE?autoplay=1&rel=0&modestbranding=1&controls=1&showinfo=0"
+              title="CareSight Demo - AI-Powered Healthcare Analytics"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
-              className="w-full h-full"
+              className="w-full h-full rounded-lg"
             />
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-12">
+            <div className="flex items-center justify-between text-white">
+              <div className="flex items-center gap-4">
+                <Badge variant="secondary" className="bg-primary/20 text-primary-foreground border-primary/30">
+                  Live Demo
+                </Badge>
+                <span className="text-sm text-gray-300">Experience the future of healthcare analytics</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <span>Press ESC to close</span>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
