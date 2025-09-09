@@ -70,6 +70,11 @@ function ChartContainer({
 }
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+  // Safety check before Object.entries
+  if (!config || typeof config !== 'object') {
+    return null
+  }
+  
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color
   )
@@ -81,7 +86,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
+        __html: Object.entries(THEMES || {})
           .map(
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
