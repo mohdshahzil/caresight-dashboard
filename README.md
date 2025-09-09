@@ -157,6 +157,189 @@ interface PatientData {
 - **Data Processing**: Server-side CSV parsing and validation
 - **State Management**: React hooks and context
 - **UI Components**: Radix UI primitives with custom styling
+- **API Backend**: RESTful API with comprehensive health prediction models
+
+## 🔌 API Documentation
+
+CareSight integrates with a comprehensive Health Models API that provides specialized endpoints for each chronic condition. The API is hosted at `https://health-models.onrender.com/api` and offers real-time predictions with full explainability.
+
+### 🤱 Maternal Health Endpoint
+**`POST /api/maternal`** - Maternal Health & Diabetes Risk Prediction
+
+Predicts gestational diabetes risk in pregnant women using comprehensive health metrics.
+
+#### Required Input Fields:
+```json
+{
+  "patient_id": 123,
+  "age": 28.0,           // Patient age (15-50 years)
+  "bmi": 24.5,           // Body Mass Index (15-50)
+  "systolic_bp": 120.0,  // Systolic BP (80-200 mmHg)
+  "diastolic_bp": 80.0,  // Diastolic BP (50-120 mmHg)
+  "glucose": 95.0,       // Blood glucose (50-300 mg/dL)
+  "insulin": 8.5,        // Insulin level (0-50 μU/mL)
+  "triceps_skinfold": 20.0, // Skinfold thickness (5-50 mm)
+  "diabetes_pedigree": 0.672, // Pedigree function (0-2.5)
+  "pregnancies": 1       // Number of pregnancies (0-20)
+}
+```
+
+#### Output:
+- **Prediction**: Binary outcome (0=no diabetes, 1=diabetes)
+- **Probability**: Risk probability (0-1)
+- **Risk Level**: Classification (low/moderate/high)
+- **Model Info**: Configuration details
+
+### ❤️ Cardiovascular Endpoint
+**`POST /api/cardiovascular`** - Cardiovascular Disease Risk Prediction
+
+Forecasts cardiovascular disease risk using comprehensive health metrics and lifestyle factors.
+
+#### Required Input Fields:
+```json
+{
+  "patient_id": 123,
+  "age": 45.0,              // Patient age (18-100 years)
+  "gender": 1,              // Gender (1=male, 2=female)
+  "height": 175.0,          // Height (100-250 cm)
+  "weight": 70.0,           // Weight (30-200 kg)
+  "systolic_bp": 130.0,     // Systolic BP (80-250 mmHg)
+  "diastolic_bp": 85.0,     // Diastolic BP (50-150 mmHg)
+  "cholesterol": 200.0,     // Total cholesterol (100-400 mg/dL)
+  "glucose": 100.0,         // Blood glucose (50-300 mg/dL)
+  "smoking": 0,             // Smoking status (0=no, 1=yes)
+  "alcohol": 0,             // Alcohol consumption (0=no, 1=yes)
+  "physical_activity": 1    // Activity level (0=low, 1=high)
+}
+```
+
+#### Output:
+- **Prediction**: Binary outcome (0=low risk, 1=high risk)
+- **Probability**: Risk probability (0-1)
+- **Risk Level**: Classification (low/moderate/high)
+- **SHAP Values**: Feature importance scores
+- **Probabilities**: Class probabilities for explainability
+
+### 🩸 Glucose/Diabetes Endpoint
+**`POST /api/glucose`** - Glucose Prediction & Diabetes Risk Assessment
+
+Advanced 90-day glucose forecasting using Temporal Fusion Transformer (TFT) model with comprehensive risk assessment.
+
+#### Key Features:
+- **90-day glucose forecasting** with uncertainty quantification
+- **Risk assessment** across multiple horizons (7, 14, 30, 60, 90 days)
+- **Context-aware risk adjustment** based on lifestyle factors
+- **Minimum 60 days** of consecutive data required
+
+#### Required Input Structure:
+```json
+{
+  "patient_id": 123,
+  "data": [
+    {
+      "date": "2024-01-01",
+      "g_mean": 117.8,           // Mean glucose (50-500 mg/dL)
+      "g_std": 27.7,             // Glucose variability (0-100)
+      "pct_hypo": 0.0,           // % time in hypoglycemia (0-100)
+      "pct_hyper": 0.0,          // % time in hyperglycemia (0-100)
+      "insulin_dose": 19.0,      // Daily insulin dose (0-200 units)
+      "insulin_adherence": 0.85, // Adherence rate (0-1)
+      "sleep_quality": 0.6,      // Sleep quality (0-1)
+      "exercise_flag": 0,        // Exercise performed (0/1)
+      "meal_variability": 0.44,  // Meal timing variability (0-1)
+      "stress_index": 0.71,      // Stress level (0-1)
+      "illness_flag": 0,         // Illness present (0/1)
+      "missed_insulin": 0,       // Dose missed (0/1)
+      "hypo_past7d": 0.0,        // Hypo events past 7 days
+      "hyper_past7d": 0.0,       // Hyper events past 7 days
+      // Engineered temporal features
+      "g_mean_lag1": 124.19,     // Previous day glucose
+      "g_mean_7d_mean": 117.8,   // 7-day rolling average
+      "g_mean_14d_std": 12.34,   // 14-day rolling std
+      "g_mean_14d_mean": 117.8,  // 14-day rolling average
+      "g_mean_30d_mean": 117.8,  // 30-day rolling average
+      "insulin_dose_lag1": 25.28, // Previous day insulin
+      "insulin_dose_lag2": 25.32, // 2 days ago insulin
+      "insulin_dose_lag3": 25.17, // 3 days ago insulin
+      "insulin_adherence_7d_mean": 0.85, // 7-day adherence avg
+      "weekday": 0,              // Day of week (0-6)
+      "is_weekend": false        // Weekend indicator
+    }
+    // ... minimum 60 days of data required
+  ],
+  "contexts": {                  // Optional context factors
+    "insulin_adherence": 0.85,
+    "sleep_quality": 0.7,
+    "insulin_dose": 30.0
+  },
+  "risk_horizons": [7, 14, 30, 60, 90] // Customizable horizons
+}
+```
+
+#### Output Structure:
+- **Glucose Predictions**: 90-day forecasts with uncertainty (p10, p50, p90 quantiles)
+- **Risk Assessment**: Horizon-specific risk analysis
+- **Context Factors**: Impact of lifestyle factors on risk
+- **Recommendations**: Actionable clinical recommendations
+
+### 🔄 Batch Processing
+**`POST /api/glucose/cohort`** - Batch Glucose Prediction & Cohort Analysis
+
+Process multiple patients simultaneously with cohort statistics and population-level insights.
+
+### 🔧 API Usage Examples
+
+#### Using cURL:
+```bash
+curl -X POST "https://health-models.onrender.com/api/cardiovascular" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "patient_id": 123,
+    "age": 45,
+    "gender": 1,
+    "height": 175,
+    "weight": 70,
+    "systolic_bp": 130,
+    "diastolic_bp": 85,
+    "cholesterol": 200,
+    "glucose": 100,
+    "smoking": 0,
+    "alcohol": 0,
+    "physical_activity": 1
+  }'
+```
+
+#### Using JavaScript/TypeScript:
+```typescript
+const response = await fetch('https://health-models.onrender.com/api/cardiovascular', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    patient_id: 123,
+    age: 45,
+    gender: 1,
+    // ... other required fields
+  })
+});
+
+const prediction = await response.json();
+console.log(prediction.risk_level); // "low", "moderate", or "high"
+```
+
+### 📊 API Response Format
+
+All endpoints return standardized responses with:
+- **Patient ID**: Original patient identifier
+- **Predictions**: Risk classifications and probabilities
+- **Explainability**: SHAP values and feature importance
+- **Model Info**: Configuration and metadata
+- **Timestamps**: Processing timestamps
+
+### ⚡ Performance & Reliability
+- **Response Time**: < 2 seconds for single predictions
+- **Batch Processing**: Efficient handling of multiple patients
+- **Error Handling**: Comprehensive error messages and validation
+- **Rate Limiting**: Optimized for clinical workflows
 
 ## 📦 Installation & Setup
 
@@ -338,10 +521,7 @@ patient_id,date,g_mean,g_std,pct_hypo,pct_hyper,insulin_dose,insulin_adherence,s
 
 - **Live Demo**: [caresight-dashboard.vercel.app](https://caresight-dashboard.vercel.app/)
 - **GitHub Repository**: [github.com/mohdshahzil/caresight-dashboard](https://github.com/mohdshahzil/caresight-dashboard)
-- **Website**: [caresight.health](https://caresight.health)
-- **Email**: support@caresight.health
-- **Documentation**: [docs.caresight.health](https://docs.caresight.health)
-- **Clinical Support**: clinicians@caresight.health
+- **API Documentation**: [health-models.onrender.com/docs](https://health-models.onrender.com/docs)
 
 ---
 
