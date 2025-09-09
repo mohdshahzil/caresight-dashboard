@@ -343,7 +343,7 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
                               <Cell key={`slice-${index}`} fill={entry.fill as string} />
                             ))}
                           </Pie>
-                          <ChartLegend content={<ChartLegendContent />} />
+                          <ChartLegend content={(props) => <div className="recharts-default-legend"><ChartLegendContent {...props} /></div>} />
                         </PieChart>
                       </ChartContainer>
                     </div>
@@ -365,7 +365,7 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
                           <PolarRadiusAxis angle={30} domain={[0, 120]} />
                           <Radar name="Patient" dataKey="score" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.4} isAnimationActive animationDuration={700} />
                           <Radar name="Ideal" dataKey="ideal" stroke="#a3e635" fill="#a3e635" fillOpacity={0.2} isAnimationActive animationDuration={700} />
-                          <ChartLegend content={<ChartLegendContent />} />
+                          <ChartLegend content={(props) => <div className="recharts-default-legend"><ChartLegendContent {...props} /></div>} />
                           <ChartTooltip content={<ChartTooltipContent />} />
                         </RadarChart>
                       </ChartContainer>
@@ -373,7 +373,7 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
                   </div>
                 </div>
 
-                {/* Enhanced SHAP Values Visualization */}
+                {/* Enhanced SHAP Values Visualization */}  
                 <div className="space-y-6">
                   {/* Time Series: Risk Probabilities */}
                   {series && series.length > 1 && (
@@ -388,7 +388,7 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
                           <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                           <YAxis unit="%" />
                           <ChartTooltip content={<ChartTooltipContent />} />
-                          <ChartLegend content={<ChartLegendContent />} />
+                          <ChartLegend content={(props) => <div className="recharts-default-legend"><ChartLegendContent {...props} /></div>} />
                           <Line type="monotone" dataKey="high" stroke="#ef4444" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
                           <Line type="monotone" dataKey="mid" stroke="#eab308" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
                           <Line type="monotone" dataKey="low" stroke="#22c55e" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
@@ -416,7 +416,7 @@ export function CSVUpload({ onPredictionUpdate }: CSVUploadProps) {
                           <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                           <YAxis />
                           <ChartTooltip content={<ChartTooltipContent />} />
-                          <ChartLegend content={<ChartLegendContent />} />
+                          <ChartLegend content={(props) => <div className="recharts-default-legend"><ChartLegendContent {...props} /></div>} />
                           <Line type="monotone" dataKey="SystolicBP" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
                           <Line type="monotone" dataKey="DiastolicBP" stroke="#60a5fa" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
                           <Line type="monotone" dataKey="BS" stroke="#22c55e" strokeWidth={2} dot={false} isAnimationActive animationDuration={700} />
