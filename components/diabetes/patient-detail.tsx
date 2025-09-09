@@ -20,7 +20,6 @@ import { GlucoseForecastChart } from "./glucose-forecast-chart"
 import { RiskHorizonChart } from "./risk-horizon-chart"
 import { OverallRiskCard } from "./overall-risk-card"
 import { RiskFactorsChart } from "./risk-factors-chart"
-import { AIExplanation } from "./ai-explanation"
 import { RawResponseViewer } from "./raw-response-viewer"
 import { DiabetesRiskSummary } from "./diabetes-risk-summary"
 import { DiabetesAnalysis } from "@/lib/diabetes-analysis"
@@ -253,12 +252,6 @@ export function PatientDetail({ patient, onBack }: PatientDetailProps) {
 
           {/* Glucose prediction charts and other analytics below */}
           {/* Context Factors from API */}
-          {/* AI Explanation */}
-          <AIExplanation 
-            explanation={latestReport.aiExplanation}
-            patientName={patient.name}
-            riskLevel={analysis.overallRiskLevel}
-          />
           {/* Raw API Response */}
           {/* Removed <RawResponseViewer ... /> for a cleaner UI */}
         </>

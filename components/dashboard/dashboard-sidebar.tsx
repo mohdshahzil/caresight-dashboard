@@ -54,11 +54,6 @@ export function DashboardSidebar({
               </Tooltip>
             </TooltipProvider>
 
-            <Link href="/explainability">
-              <Button variant="ghost" size="sm">
-                <Settings className="w-4 h-4" />
-              </Button>
-            </Link>
           </div>
         </div>
 
@@ -96,12 +91,6 @@ export function DashboardSidebar({
             <h4 className="font-semibold text-sidebar-foreground">Quick Actions</h4>
           </div>
           <div className="space-y-2">
-            <Link href="/explainability">
-              <Button variant="ghost" size="sm" className="w-full justify-start">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                AI Explanations
-              </Button>
-            </Link>
             <Button variant="ghost" size="sm" className="w-full justify-start" onClick={onExport}>
               <Download className="w-4 h-4 mr-2" />
               Export Data

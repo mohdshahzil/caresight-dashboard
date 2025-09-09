@@ -1,10 +1,15 @@
+"use client"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Shield, BarChart3, Users, Brain, Heart, Activity, Stethoscope } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ArrowRight, Shield, BarChart3, Users, Brain, Heart, Activity, Stethoscope, Play, X } from "lucide-react"
 import Link from "next/link"
 
 export default function LandingPage() {
+  const [showVideoModal, setShowVideoModal] = useState(false)
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -55,6 +60,15 @@ export default function LandingPage() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="text-lg px-8 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              onClick={() => setShowVideoModal(true)}
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Watch Demo
+            </Button>
           </div>
         </div>
       </section>
@@ -314,6 +328,40 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Video Demo Modal */}
+      <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
+        <DialogContent className="max-w-4xl w-full p-0 overflow-hidden">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Play className="w-5 h-5 text-primary" />
+                CareSight Demo
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowVideoModal(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="aspect-video w-full">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/UW0U5jUQNsE?autoplay=1&rel=0&modestbranding=1"
+              title="CareSight Demo"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

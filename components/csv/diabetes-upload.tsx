@@ -181,7 +181,6 @@ export function DiabetesUpload({ onPredictionUpdate }: DiabetesUploadProps) {
       await sleep(200)
 
       let riskFactors: Record<string, number> = {}
-      let aiExplanation: string | undefined
 
       try {
         // Extract risk factors from API response and input data
@@ -196,22 +195,11 @@ export function DiabetesUpload({ onPredictionUpdate }: DiabetesUploadProps) {
           horizonRisk: apiResponse.risk_assessment?.horizon_risks?.horizon_90d || {}
         })
         riskFactors = typeof riskFactorsResult === 'object' && riskFactorsResult !== null ? riskFactorsResult : {};
-
-        // Generate AI recommendations using Gemini
-        const contextFactors = apiResponse.risk_assessment?.context_factors || {};
-        const selectedHorizon = '90d';
-        const horizonRisk = apiResponse.risk_assessment?.horizon_risks?.horizon_90d || {};
-        aiExplanation = await getDiabetesRecommendations({
-          demographics: { name: demographics.name, age: demographics.age, gender: demographics.gender },
-          contextFactors,
-          selectedHorizon,
-          horizonRisk,
-        });
-        logDebug('AI recommendations generated successfully')
-      } catch (aiError) {
-        logError(aiError instanceof Error ? aiError : new Error('Failed to generate AI recommendations'), {
+        logDebug('Risk factors extracted successfully')
+      } catch (riskError) {
+        logError(riskError instanceof Error ? riskError : new Error('Failed to extract risk factors'), {
           component: 'DiabetesUpload',
-          action: 'generate-explanation'
+          action: 'extract-risk-factors'
         })
       }
 
@@ -230,7 +218,6 @@ export function DiabetesUpload({ onPredictionUpdate }: DiabetesUploadProps) {
           analysisDate: new Date().toISOString(),
           glucoseData: payload.patients?.[0]?.data || [],
           riskFactors,
-          aiExplanation,
           rawApiResponse: apiResponse,
           payload // Use the local variable, not payloadJson
         })
