@@ -122,6 +122,10 @@ Our specialized models demonstrate exceptional performance across all chronic co
 ![Diabetes TFT Regression Metrics](metrics%20images/regressiontftdiabetes.jpg)
 *Figure 3: Temporal Fusion Transformer (TFT) model performance for glucose prediction showing regression analysis, prediction accuracy over time horizons, and uncertainty quantification. The model provides accurate 90-day glucose forecasting with ±0.3% HbA1c prediction accuracy.*
 
+#### 🩸 Diabetes Model Performance - Comprehensive Output Analysis
+![Diabetes Model Comprehensive Output](metrics%20images/diabetesoutput.png)
+*Figure 4: Complete diabetes model output analysis showcasing multi-horizon risk predictions, feature importance analysis, and clinical decision support metrics. This visualization demonstrates the model's ability to provide actionable insights across different time horizons (7, 14, 30, 60, 90 days) with detailed explainability for clinical decision-making.*
+
 ### 🧠 Explainability Engine
 - **Global Factors**: Population-level risk drivers across patient cohorts
 - **Local Explanations**: Individual patient risk factors using SHAP values
