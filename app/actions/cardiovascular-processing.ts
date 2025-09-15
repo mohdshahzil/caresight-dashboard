@@ -134,7 +134,7 @@ export async function processCardiovascularCSV(formData: FormData): Promise<{
     
     let response: Response
     try {
-      response = await fetch("https://health-models.onrender.com/api/cardiovascular", {
+      response = await fetch("http://172.16.44.133:10000/api/cardiovascular", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

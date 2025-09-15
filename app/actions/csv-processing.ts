@@ -102,7 +102,7 @@ export async function processCSV(formData: FormData): Promise<{
     // Call API for each data point (in parallel)
     const predictions: PredictionResponse[] = await Promise.all(
       seriesData.map(async (entry) => {
-        const resp = await fetch("https://health-models.onrender.com/api/maternal", {
+        const resp = await fetch("http://172.16.44.133:10000/api/maternal", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(entry.data),

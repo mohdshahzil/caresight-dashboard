@@ -75,15 +75,6 @@ export function DashboardSidebar({
             <span className="hidden sm:inline">Cardiovascular</span>
             <span className="sm:hidden">Cardio</span>
           </Button>
-          <Button
-            variant={activeTab === "maternal" ? "default" : "ghost"}
-            className="w-full justify-start"
-            onClick={() => onTabChange("maternal")}
-          >
-            <Heart className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Maternal Care</span>
-            <span className="sm:hidden">Maternal</span>
-          </Button>
         </nav>
 
         <div className="hidden lg:block mt-8">

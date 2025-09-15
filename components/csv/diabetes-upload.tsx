@@ -138,7 +138,7 @@ export function DiabetesUpload({ onPredictionUpdate }: DiabetesUploadProps) {
       await sleep(200)
 
       // Stage 4: Call API
-      const baseUrl = "http://127.0.0.1:8000/api/glucose"
+      const baseUrl = "/api/glucose"
       const isCohort = payload.patients && Array.isArray(payload.patients) && payload.patients.length > 1
       const apiUrl = isCohort ? `${baseUrl}/cohort` : baseUrl
 
