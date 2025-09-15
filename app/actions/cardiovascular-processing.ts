@@ -130,11 +130,12 @@ export async function processCardiovascularCSV(formData: FormData): Promise<{
     }
 
     // Call the cardiovascular API
+    const baseUrl = "http://172.16.44.133:10000/api/cardiovascular";
     console.log("Calling cardiovascular API with payload:", JSON.stringify(requestPayload, null, 2))
     
     let response: Response
     try {
-      response = await fetch("http://172.16.44.133:10000/api/cardiovascular", {
+      response = await fetch(baseUrl, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

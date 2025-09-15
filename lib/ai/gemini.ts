@@ -34,9 +34,9 @@ export async function getMaternalRecommendations(
     prediction: MaternalPrediction
   }
 ): Promise<string> {
-  const apiKey = requireEnv("GOOGLE_GENERATIVE_AI_API_KEY")
+  const apiKey = "AIzaSyB75CXjVkrGpvEkULCpfN6_Qo7Zlt7sE40"
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" })
 
   const prompt = `
 You are a clinical decision support assistant. Given maternal vital parameters, a model's risk classification, probabilities, and SHAP explanations, write concise, patient-friendly and clinician-actionable recommendations. Include:
@@ -61,9 +61,9 @@ export async function getCardiovascularRecommendations(
     predictions: CardiovascularPrediction
   }
 ): Promise<string> {
-  const apiKey = requireEnv("GOOGLE_GENERATIVE_AI_API_KEY")
+  const apiKey = "AIzaSyB75CXjVkrGpvEkULCpfN6_Qo7Zlt7sE40"
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" })
 
   // Focus on the highest risk patients for recommendations
   const highRiskPatients = input.predictions.patient_predictions.filter(p => p.risk_level === "HIGH")
@@ -130,9 +130,9 @@ export async function getDiabetesRecommendations(
     recentTrends?: string
   }
 ): Promise<string> {
-  const apiKey = requireEnv("GOOGLE_GENERATIVE_AI_API_KEY")
+  const apiKey = "AIzaSyB75CXjVkrGpvEkULCpfN6_Qo7Zlt7sE40"
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" })
 
   const contextList = Object.entries(input.contextFactors || {})
     .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v.value} (${v.impact.replace('_', ' ')})`)

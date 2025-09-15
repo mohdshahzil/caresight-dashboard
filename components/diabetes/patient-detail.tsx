@@ -25,6 +25,8 @@ import { DiabetesRiskSummary } from "./diabetes-risk-summary"
 import { DiabetesAnalysis } from "@/lib/diabetes-analysis"
 import { useState } from "react"
 import { Tabs } from "@/components/ui/tabs"
+import { getDiabetesAIInsights } from "@/lib/ai/gemini-diabetes"
+import ReactMarkdown from "react-markdown"
 
 interface PatientDetailProps {
   patient: StoredPatient
@@ -85,6 +87,9 @@ export function PatientDetail({ patient, onBack }: PatientDetailProps) {
   const horizonKeys = ["7d", "14d", "30d", "60d", "90d"]
   const [selectedHorizon, setSelectedHorizon] = useState("7d")
   const horizonData = analysis?.horizonRisks?.[`horizon_${selectedHorizon}`] || {}
+  const [aiInsights, setAiInsights] = useState<string | null>(null)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
 
   function safePercent(val: any) {
     return typeof val === "number" && !isNaN(val) ? `${(val * 100).toFixed(0)}%` : "N/A"
@@ -108,6 +113,21 @@ export function PatientDetail({ patient, onBack }: PatientDetailProps) {
     if (typeof horizon.volatility_risk === 'number' && horizon.volatility_risk > 0.1) parts.push("glucose levels are fluctuating");
     if (parts.length === 0) return "Your glucose profile is stable for this period.";
     return `For this period, you have ${parts.join(", ")}.`;
+  }
+
+  const handleGenerateAI = async () => {
+    if (!analysis) return
+    setAiLoading(true)
+    setAiError(null)
+    setAiInsights(null)
+    try {
+      const insights = await getDiabetesAIInsights(analysis, { selectedHorizon })
+      setAiInsights(insights)
+    } catch (err: any) {
+      setAiError(err?.message || "Failed to generate AI insights.")
+    } finally {
+      setAiLoading(false)
+    }
   }
 
   return (
@@ -249,6 +269,30 @@ export function PatientDetail({ patient, onBack }: PatientDetailProps) {
             riskFactors={analysis.contextFactors} 
             horizonRisks={analysis.horizonRisks} 
           />
+
+          {/* --- AI Insights & Interventions --- */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="flex items-center gap-2">
+                <Info className="h-5 w-5 text-blue-600" />
+                AI Insights & Interventions
+              </CardTitle>
+              <Button variant="outline" onClick={handleGenerateAI} disabled={aiLoading}>
+                {aiLoading ? "Generating..." : "Generate AI Insights"}
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {aiError && <div className="text-red-600 mb-2">{aiError}</div>}
+              {aiInsights && (
+                <div className="prose max-w-none">
+                  <ReactMarkdown>{aiInsights}</ReactMarkdown>
+                </div>
+              )}
+              {!aiInsights && !aiLoading && !aiError && (
+                <div className="text-gray-500">Click the button to generate personalized AI insights and intervention suggestions for this report.</div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Glucose prediction charts and other analytics below */}
           {/* Context Factors from API */}
