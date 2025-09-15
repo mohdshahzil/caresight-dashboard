@@ -23,6 +23,15 @@ export async function getDiabetesAIInsights(
     name: data.predictionMetadata?.name || data.raw?.prediction_metadata?.name || "Patient",
     age: data.predictionMetadata?.age || data.raw?.prediction_metadata?.age || "N/A",
     gender: data.predictionMetadata?.gender || data.raw?.prediction_metadata?.gender || "N/A",
+    height_cm: data.predictionMetadata?.height || data.raw?.prediction_metadata?.height || undefined,
+    weight_kg: data.predictionMetadata?.weight || data.raw?.prediction_metadata?.weight || undefined,
+  }
+
+  // Compute BMI if possible
+  let bmi: number | undefined
+  if (typeof demographics.weight_kg === "number" && typeof demographics.height_cm === "number" && demographics.height_cm > 0) {
+    const heightMeters = demographics.height_cm / 100
+    bmi = +(demographics.weight_kg / (heightMeters * heightMeters)).toFixed(1)
   }
 
   // Use selected horizon or default to 90d
@@ -45,6 +54,7 @@ export async function getDiabetesAIInsights(
   // Compose the summary object for Gemini
   const summary = {
     demographics,
+    bmi,
     selectedHorizon,
     avgGlucose: avgGlucose ? Math.round(avgGlucose) : undefined,
     volatility: volatility !== undefined ? Math.round(volatility * 100) + "%" : undefined,
@@ -54,27 +64,35 @@ export async function getDiabetesAIInsights(
     overallRiskScore: data.overallRiskScore !== undefined ? Math.round(data.overallRiskScore * 100) + "%" : undefined,
     contextFactors: Object.entries(contextFactors).map(([k, v]: any) => `${k.replace(/_/g, ' ')}: ${v.value} (${v.impact.replace('_', ' ')})`).join(', '),
     recentTrends: options?.recentTrends || undefined,
+    lifestyleDefaults: {
+      smoking_status: "yes",
+      alcohol_use: "yes",
+    },
   }
 
   // Compose the prompt
   const prompt = `
-You are a diabetes care specialist. Given the following patient summary, generate a detailed, non-generic report in **markdown** with:
-- A friendly greeting and a short summary of the patient's diabetes risk using the provided data (use emojis for clarity)
-- 2-3 personalized, plain-language insights about the patient's diabetes risk and what is driving it (reference the actual numbers)
-- 3-5 actionable, patient-friendly recommendations to improve diabetes risk (use checklists and emojis)
-- 2-3 clinical intervention suggestions for a healthcare provider (label this section clearly, use medical emojis)
-- When to seek medical attention if relevant (with a warning emoji)
+You are a diabetes care specialist. Create a friendly, plain‑language report in **markdown** that an average person can easily understand. Avoid technical jargon; explain terms simply.
 
-**Patient Data Summary:**
+Provide:
+- A warm greeting and a short, clear summary of the person's current diabetes risk using the actual numbers (use a few helpful emojis).
+- 3–5 personalized insights in simple words explaining what's driving risk (e.g., average glucose, highs/lows, volatility). Make these a bit longer than one sentence each but still concise.
+- 5–7 day‑to‑day actions the person can do starting today (sleep, meals, activity, hydration, meds adherence, stress, routine). Use checkboxes and plain language.
+- A lifestyle section that always mentions smoking and alcohol, even if not in the data. Give practical guidance to cut down/quit smoking and to limit alcohol with specific weekly limits.
+- A brief note for the clinician with 2–3 intervention ideas (clearly labeled for clinicians).
+- Clear guidance on when to seek medical help, with concrete examples.
+
+Use the following patient summary. If height and weight are present, calculate BMI; if BMI is high or low, explain what that means in simple terms and how it relates to glucose.
+
+Patient Summary:
 ${JSON.stringify(summary, null, 2)}
 
-**Instructions:**
-- Use markdown formatting (headings, bold, lists, etc.)
-- Use relevant emojis for each section (e.g., 🩸, 💡, ✅, ⚠️, 🍽️, 🏃‍♂️, 💊, 👩‍⚕️, etc.)
-- Reference the provided numbers and factors directly in your explanations
-- Do NOT repeat the raw data as-is; interpret and explain it
-- Make the report feel personalized, not generic
-- Keep the total length under 350 words
+Writing rules:
+- Keep language friendly and encouraging. Prefer everyday words over medical terms.
+- Reference the real numbers (e.g., average glucose, risks) but explain them simply.
+- Always include smoking 🚭 and alcohol 🍷 guidance even if lifestyle data is "unknown".
+- Use short sections with headings, bold highlights, and lists.
+- Aim for ~400–550 words for richer insights.
 `
 
   const result = await model.generateContent(prompt)
