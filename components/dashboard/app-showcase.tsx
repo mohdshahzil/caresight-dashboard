@@ -23,7 +23,7 @@ export function AppShowcase() {
             <div className="relative w-full max-w-xl aspect-[16/10] rounded-lg bg-muted border border-border shadow-sm overflow-hidden">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-border rounded-b-xl" />
               <Image
-                src="/placeholder.jpg"
+                src="/laptop_screen.png"
                 alt="CareSight web dashboard"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -37,11 +37,11 @@ export function AppShowcase() {
               <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-border/80 rounded-full" />
               <div className="absolute top-2 right-8 w-8 h-1.5 bg-border/50 rounded-full" />
               <Image
-                src="/placeholder.jpg"
+                src="/mobile_screen.jpg"
                 alt="CareSight mobile app"
                 fill
                 sizes="(max-width: 640px) 50vw, 25vw"
-                className="object-cover"
+                className="object-contain bg-black"
                 priority
               />
             </div>
