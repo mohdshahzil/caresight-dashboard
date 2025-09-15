@@ -14,7 +14,7 @@ export function AppShowcase() {
               Hospital-grade analytics for clinicians. Personal guidance for patients. One platform, two experiences.
             </p>
             <div className="flex items-center justify-center lg:justify-start gap-3 reveal delay-2">
-              <span className="text-sm text-muted-foreground">Swap in your screenshots below</span>
+    
             </div>
           </div>
 
@@ -47,7 +47,6 @@ export function AppShowcase() {
             </div>
           </div>
         </div>
-        <div className="mt-6 text-xs text-muted-foreground text-center lg:text-left reveal">Replace images with real screenshots by updating the src.</div>
       </div>
     </section>
   )
