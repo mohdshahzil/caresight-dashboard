@@ -59,13 +59,12 @@ export function DashboardSidebar({
 
         <nav className="grid grid-cols-2 lg:grid-cols-1 gap-2">
           <Button
-            variant={activeTab === "maternal" ? "default" : "ghost"}
+            variant={activeTab === "diabetes" ? "default" : "ghost"}
             className="w-full justify-start"
-            onClick={() => onTabChange("maternal")}
+            onClick={() => onTabChange("diabetes")}
           >
-            <Heart className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Maternal Care</span>
-            <span className="sm:hidden">Maternal</span>
+            <Stethoscope className="w-4 h-4 mr-2" />
+            Diabetes
           </Button>
           <Button
             variant={activeTab === "cardiovascular" ? "default" : "ghost"}
@@ -77,12 +76,13 @@ export function DashboardSidebar({
             <span className="sm:hidden">Cardio</span>
           </Button>
           <Button
-            variant={activeTab === "diabetes" ? "default" : "ghost"}
+            variant={activeTab === "maternal" ? "default" : "ghost"}
             className="w-full justify-start"
-            onClick={() => onTabChange("diabetes")}
+            onClick={() => onTabChange("maternal")}
           >
-            <Stethoscope className="w-4 h-4 mr-2" />
-            Diabetes
+            <Heart className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Maternal Care</span>
+            <span className="sm:hidden">Maternal</span>
           </Button>
         </nav>
 

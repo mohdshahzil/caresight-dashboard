@@ -6,9 +6,13 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ArrowRight, Shield, BarChart3, Users, Brain, Heart, Activity, Stethoscope, Play, X } from "lucide-react"
 import Link from "next/link"
+import { AppShowcase } from "@/components/dashboard/app-showcase"
+
+import { useReveal } from "@/hooks/use-reveal"
 
 export default function LandingPage() {
   const [showVideoModal, setShowVideoModal] = useState(false)
+  useReveal()
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,18 +48,18 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center max-w-4xl">
-          <Badge variant="secondary" className="mb-6 bg-accent/10 text-accent border-accent/20">
+          <Badge variant="secondary" className="mb-6 bg-accent/10 text-accent border-accent/20 reveal">
             AI-Powered Healthcare Analytics
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 text-balance">
+          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 text-balance shine reveal delay-1">
             CareSight – AI-Driven Risk Prediction for <span className="text-primary">Chronic Care Patients</span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 text-pretty max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 text-pretty max-w-2xl mx-auto reveal delay-2">
             See risks early. Act with confidence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/dashboard">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8 glow magnetic reveal delay-2">
                 Go to Dashboard
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -63,7 +67,7 @@ export default function LandingPage() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="text-lg px-8 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg group"
+              className="text-lg px-8 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg group glow magnetic reveal delay-3"
               onClick={() => setShowVideoModal(true)}
             >
               <div className="flex items-center gap-2">
@@ -77,21 +81,28 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* App Showcase */}
+      <section className="px-4">
+        <div className="container mx-auto max-w-6xl">
+          <AppShowcase />
+        </div>
+      </section>
+
       {/* About CareSight */}
       <section id="about" className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">About CareSight</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 reveal">About CareSight</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty reveal delay-1">
               CareSight empowers healthcare professionals with AI-driven insights to predict and prevent complications
               in chronic care patients, enabling proactive interventions that save lives.
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-2xl font-semibold text-foreground mb-6">Transforming Patient Care</h3>
+              <h3 className="text-2xl font-semibold text-foreground mb-6 reveal">Transforming Patient Care</h3>
               <div className="space-y-4">
-                <div className="flex items-start space-x-3">
+                <div className="flex items-start space-x-3 reveal">
                   <Shield className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold text-foreground">Predictive Analytics</h4>
@@ -100,7 +111,7 @@ export default function LandingPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3">
+                <div className="flex items-start space-x-3 reveal delay-1">
                   <Brain className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold text-foreground">Clinical Intelligence</h4>
@@ -109,7 +120,7 @@ export default function LandingPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3">
+                <div className="flex items-start space-x-3 reveal delay-2">
                   <Activity className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold text-foreground">Real-time Monitoring</h4>
@@ -120,7 +131,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            <div className="bg-card rounded-xl p-8 border border-border">
+            <div className="bg-card rounded-xl p-8 border border-border reveal delay-1">
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-2">85%</div>
@@ -148,13 +159,13 @@ export default function LandingPage() {
       <section id="features" className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Powerful Features</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 reveal">Powerful Features</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty reveal delay-1">
               Comprehensive tools designed specifically for healthcare professionals managing chronic care patients.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-border hover:shadow-lg transition-shadow">
+            <Card className="border-border hover:shadow-lg transition-shadow reveal">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <BarChart3 className="w-6 h-6 text-primary" />
@@ -166,7 +177,7 @@ export default function LandingPage() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-border hover:shadow-lg transition-shadow">
+            <Card className="border-border hover:shadow-lg transition-shadow reveal delay-1">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-primary" />
@@ -178,7 +189,7 @@ export default function LandingPage() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-border hover:shadow-lg transition-shadow">
+            <Card className="border-border hover:shadow-lg transition-shadow reveal delay-2">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Brain className="w-6 h-6 text-primary" />
@@ -189,7 +200,7 @@ export default function LandingPage() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-border hover:shadow-lg transition-shadow">
+            <Card className="border-border hover:shadow-lg transition-shadow reveal">
               <CardHeader>
                 <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
                   <Shield className="w-6 h-6 text-accent" />
@@ -200,7 +211,7 @@ export default function LandingPage() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-border hover:shadow-lg transition-shadow">
+            <Card className="border-border hover:shadow-lg transition-shadow reveal delay-1">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Activity className="w-6 h-6 text-primary" />
@@ -211,7 +222,7 @@ export default function LandingPage() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-border hover:shadow-lg transition-shadow">
+            <Card className="border-border hover:shadow-lg transition-shadow reveal delay-2">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Stethoscope className="w-6 h-6 text-primary" />
@@ -229,22 +240,22 @@ export default function LandingPage() {
       {/* Why It Matters */}
       <section id="why" className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Why It Matters</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 reveal">Why It Matters</h2>
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div>
+            <div className="reveal">
               <div className="text-4xl font-bold text-accent mb-2">2.6M</div>
               <div className="text-muted-foreground">Preventable hospital readmissions annually</div>
             </div>
-            <div>
+            <div className="reveal delay-1">
               <div className="text-4xl font-bold text-accent mb-2">$15B</div>
               <div className="text-muted-foreground">Healthcare costs from chronic disease complications</div>
             </div>
-            <div>
+            <div className="reveal delay-2">
               <div className="text-4xl font-bold text-accent mb-2">60%</div>
               <div className="text-muted-foreground">Of adverse events are preventable with early intervention</div>
             </div>
           </div>
-          <p className="text-xl text-muted-foreground text-pretty">
+          <p className="text-xl text-muted-foreground text-pretty reveal">
             CareSight transforms reactive healthcare into proactive care, helping clinicians identify at-risk patients
             before complications occur, ultimately saving lives and reducing healthcare costs.
           </p>

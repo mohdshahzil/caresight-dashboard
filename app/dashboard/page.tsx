@@ -20,7 +20,7 @@ import { exportPatientData, refreshPatientData } from "@/app/actions/patient-act
 import { logError } from "@/lib/error-logger"
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("maternal")
+  const [activeTab, setActiveTab] = useState("diabetes")
   const [selectedPatient, setSelectedPatient] = useState<any>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [riskFilter, setRiskFilter] = useState("all")
@@ -39,7 +39,7 @@ export default function DashboardPage() {
       case "diabetes":
         return diabetesPatients
       default:
-        return maternalCarePatients
+        return diabetesPatients
     }
   }
 

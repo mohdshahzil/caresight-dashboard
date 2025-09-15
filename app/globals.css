@@ -131,3 +131,48 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* ===== Reveal animations ===== */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal { opacity: 0; transform: translateY(16px); }
+  .reveal.in-view { animation: fade-up .7s cubic-bezier(.22,1,.36,1) forwards; }
+  .reveal.delay-1.in-view { animation-delay: .1s; }
+  .reveal.delay-2.in-view { animation-delay: .2s; }
+  .reveal.delay-3.in-view { animation-delay: .3s; }
+
+  /* ===== Shimmer/shine for text ===== */
+  .shine {
+    position: relative;
+    overflow: clip;
+  }
+
+  .shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.25) 35%, transparent 50%);
+    transform: translateX(-120%);
+    animation: shine-sweep 3.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes shine-sweep {
+    50% { transform: translateX(120%); }
+  }
+
+  /* ===== CTA micro-interactions ===== */
+  .magnetic:hover { transform: translateY(-1px) scale(1.02); }
+  .magnetic:active { transform: translateY(0) scale(0.995); }
+  .glow {
+    box-shadow: 0 0 0 0 oklch(0.6 0.15 200 / 0.0);
+    transition: box-shadow .3s ease, transform .2s ease;
+  }
+  .glow:hover {
+    box-shadow: 0 8px 28px -8px color-mix(in oklab, var(--primary) 40%, transparent);
+  }
+}
